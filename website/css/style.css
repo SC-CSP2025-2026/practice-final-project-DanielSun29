@@ -1,0 +1,92 @@
+@import url("https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Cursive:wght@400..700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+html,
+body {
+  height: 100%;
+  font-family: "Open Sans", sans-serif;
+}
+
+body {
+  /*
+* Created with https://www.css-gradient.com
+* Gradient link: https://www.css-gradient.com/?c1=1ea8d9&c2=72efca&gt=l&gd=dtl
+*/
+  align-items: center;
+  background: #1ea8d9;
+  background: linear-gradient(315deg, #1ea8d9, #72efca);
+  display: flex;
+  text-align: center;
+}
+
+h1 {
+  font-family: "Edu NSW ACT Hand Cursive", cursive, serif;
+  color: white;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+}
+
+.container-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.content {
+  width: 100%;
+  max-width: 1200px;
+  align-items: center;
+}
+
+.search-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.search-bar {
+  flex: 100%;
+  min-width: 200px;
+  max-width: 400px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+}
+
+.cities-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.city-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: left;
+}
+
+.city-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: cornflowerblue;
+  margin-bottom: 10px;
+}
+
+.city-info-label {
+  font-weight: 600;
+  color: #555;
+}
+
+.city-info-value {
+  color: #777;
+}

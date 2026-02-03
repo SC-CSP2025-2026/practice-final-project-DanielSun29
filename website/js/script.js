@@ -1,4 +1,6 @@
-const url =
+const cityUrl =
+  "https://student-api-proxy.onrender.com/api/wft-geo-db.p.rapidapi.com/v1/geo/cities";
+const countryUrl =
   "https://student-api-proxy.onrender.com/api/wft-geo-db.p.rapidapi.com/v1/geo/countries";
 const options = {
   method: "GET",
@@ -8,14 +10,113 @@ const options = {
   },
 };
 
-fetch(url, options)
-  .then((response) =>
-    response.json().then((result) => {
-      console.log(result.data); // Your API data
+let allCities = [];
+
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const citiesContainer = document.getElementById("citiesContainer");
+const loadingDiv = document.getElementById("loading");
+
+// Fetch cities from API
+async function fetchCities(searchQuery = "") {
+  try {
+    citiesContainer.innerHTML = "";
+
+    const countryParams = searchQuery
+      ? `?namePrefix=${encodeURIComponent(searchQuery)}`
+      : "?limit=50";
+    const fullCountryUrl = countryUrl + countryParams;
+
+    const countryResponse = await fetch(fullCountryUrl, options);
+    const countryResult = await countryResponse.json();
+
+    const countryID = countryResult.data[0]?.wikiDataId || null;
+
+    const cityParams = searchQuery
+      ? `?countryIds=${countryID}&limit=50`
+      : "?limit=50";
+    const fullCityUrl = cityUrl + cityParams;
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const cityResponse = await fetch(fullCityUrl, options);
+    const result = await cityResponse.json();
+
+    if (result.data && result.data.length > 0) {
+      allCities = result.data;
+      displayCities(allCities);
       console.log(`Cost: $${result.meta.cost}`);
       console.log(`Remaining: $${result.meta.remaining_budget}`);
-    }),
-  )
-  .catch((error) => {
-    console.log(error);
+    } else {
+      citiesContainer.innerHTML = '<div class="content">Not found</div>';
+    }
+  } catch (error) {
+    console.error("Error fetching cities:", error);
+    alert(
+      "An error occurred while fetching city data. Please try again later.",
+    );
+  } finally {
+    loadingDiv.style.display = "none";
+  }
+}
+
+// Display cities as cards
+function displayCities(cities) {
+  citiesContainer.innerHTML = "";
+
+  if (cities.length === 0) {
+    citiesContainer.innerHTML = '<div class="content">No cities found.</div>';
+    return;
+  }
+
+  cities.forEach((city) => {
+    const card = document.createElement("div");
+    card.className = "city-card";
+
+    const population = city.population || "N/A";
+    const timezone = city.timezone || "N/A";
+    const country = city.countryCode || "N/A";
+
+    card.innerHTML = `
+      <div class="city-name">${city.name}</div>
+      <div class="row">
+        <div class="col">
+          <span class="city-info-label">Country:</span>
+          <span class="city-info-value">${country}</span>
+        </div>
+        <div class="col">
+          <span class="city-info-label">Population:</span>
+          <span class="city-info-value">${population}</span>
+        </div>
+        <div class="col">
+          <span class="city-info-label">Timezone:</span>
+          <span class="city-info-value">${timezone}</span>
+        </div>
+      </div>
+    `;
+
+    citiesContainer.appendChild(card);
   });
+}
+
+// Search functionality
+function handleSearch() {
+  const input = searchInput.value.trim();
+  for (const char of input) {
+    if (!/[a-zA-Z\s]/.test(char)) {
+      alert("Please enter only alphabetic characters and spaces.");
+      return;
+    }
+  }
+  fetchCities(input);
+}
+
+// Event listeners
+searchBtn.addEventListener("click", handleSearch);
+searchInput.addEventListener("keypress", (key) => {
+  if (key.key === "Enter") {
+    handleSearch();
+  }
+});
+
+// Load initial cities on page load

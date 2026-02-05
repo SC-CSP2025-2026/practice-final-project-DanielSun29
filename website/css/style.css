@@ -70,8 +70,6 @@ h1 {
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 15px;
-  transition: all 0.3s ease;
-  cursor: pointer;
   text-align: left;
 }
 

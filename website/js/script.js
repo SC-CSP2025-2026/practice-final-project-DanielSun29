@@ -24,26 +24,28 @@ async function fetchCities(searchQuery = "") {
 
     const countryParams = searchQuery
       ? `?namePrefix=${encodeURIComponent(searchQuery)}`
-      : "?limit=50";
+      : "?limit=10";
     const fullCountryUrl = countryUrl + countryParams;
 
     const countryResponse = await fetch(fullCountryUrl, options);
     const countryResult = await countryResponse.json();
 
-    const countryID = countryResult.data[0]?.wikiDataId || null;
+    console.log(countryResult);
+    const countryID = countryResult?.data?.data?.[0]?.wikiDataId || null;
+    console.log(`Country ID: ${countryID}`);
 
     const cityParams = searchQuery
-      ? `?countryIds=${countryID}&limit=50`
-      : "?limit=50";
+      ? `?countryIds=${countryID}&sort=-population&limit=10`
+      : "?limit=10";
     const fullCityUrl = cityUrl + cityParams;
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const cityResponse = await fetch(fullCityUrl, options);
     const result = await cityResponse.json();
 
-    if (result.data && result.data.length > 0) {
-      allCities = result.data;
+    if (result.data?.data && result.data.data.length > 0) {
+      allCities = result.data.data;
       displayCities(allCities);
       console.log(`Cost: $${result.meta.cost}`);
       console.log(`Remaining: $${result.meta.remaining_budget}`);
@@ -74,23 +76,23 @@ function displayCities(cities) {
     card.className = "city-card";
 
     const population = city.population || "N/A";
-    const timezone = city.timezone || "N/A";
-    const country = city.countryCode || "N/A";
+    const type = city.type || "N/A";
+    const region = city.region || "N/A";
 
     card.innerHTML = `
       <div class="city-name">${city.name}</div>
       <div class="row">
         <div class="col">
-          <span class="city-info-label">Country:</span>
-          <span class="city-info-value">${country}</span>
+          <span class="city-info-label">Region:</span>
+          <span class="city-info-value">${region}</span>
         </div>
         <div class="col">
           <span class="city-info-label">Population:</span>
           <span class="city-info-value">${population}</span>
         </div>
         <div class="col">
-          <span class="city-info-label">Timezone:</span>
-          <span class="city-info-value">${timezone}</span>
+          <span class="city-info-label">Type:</span>
+          <span class="city-info-value">${type}</span>
         </div>
       </div>
     `;
@@ -102,6 +104,7 @@ function displayCities(cities) {
 // Search functionality
 function handleSearch() {
   const input = searchInput.value.trim();
+  loadingDiv.style.display = "block";
   for (const char of input) {
     if (!/[a-zA-Z\s]/.test(char)) {
       alert("Please enter only alphabetic characters and spaces.");
